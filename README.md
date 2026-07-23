@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  
+  # 🍰 Creamy Heaven
+  **Artisanal Cakes & Desserts Platform**
 
-## Getting Started
+  <p align="center">
+    A premium, minimalistic e-commerce storefront and admin dashboard built for an artisanal bakery. Designed with a custom "Cream & Black" aesthetic, fluid motion, and robust server-first architecture.
+  </p>
+</div>
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✦ The Vision
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Creamy Heaven is built on the philosophy that the digital experience should reflect the quality of the product. The interface embraces a minimalistic, luxury aesthetic—utilizing a harmonious blend of warm cream backgrounds (`#F7F1E6`), sharp charcoal blacks (`#151210`), and smooth micro-interactions.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Every scroll, hover, and page transition is choreographed to feel organic, premium, and effortless.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✦ Technology Stack
 
-## Learn More
+This platform leverages a modern, server-first architecture using Next.js, prioritizing performance, SEO, and developer experience.
 
-To learn more about Next.js, take a look at the following resources:
+### Core Framework
+- **[Next.js 15+](https://nextjs.org/)** – App Router, React Server Components (RSC), and Server Actions.
+- **[React 19](https://react.dev/)** – Latest concurrent features and hooks.
+- **[TypeScript](https://www.typescriptlang.org/)** – End-to-end type safety.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Styling & Motion
+- **[Tailwind CSS v4](https://tailwindcss.com/)** – Utility-first styling with a fully customized theme engine.
+- **[GSAP](https://gsap.com/)** – High-performance animations and scroll-triggered reveals (`@gsap/react`).
+- **[Material Symbols](https://fonts.google.com/icons)** – Clean, variable-font iconography.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Backend & Infrastructure
+- **[Firebase](https://firebase.google.com/)** – Firestore for real-time NoSQL database management.
+- **[Firebase Admin SDK](https://firebase.google.com/docs/admin/setup)** – Secure server-side data operations and session cookie authentication.
+- **[Cloudinary](https://cloudinary.com/)** – Optimized image delivery and asset management.
+- **[Brevo](https://www.brevo.com/)** – Transactional email delivery system.
 
-## Deploy on Vercel
+### Utility
+- **[Zod](https://zod.dev/)** – Schema validation for robust form handling and API safety.
+- **[date-fns](https://date-fns.org/)** – Modern JavaScript date utility library.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ✦ Features
+
+### 🛍️ Storefront
+- **Immersive Shopping:** Fluid animations, image zoom interactions, and sticky carts.
+- **Dynamic Routing:** Next.js dynamic routes for seamless category filtering and product details.
+- **Checkout Flow:** Optimized cart management and Cash on Delivery (COD) processing.
+- **SEO Optimized:** Server-rendered pages with metadata mapping for high discoverability.
+
+### 🛡️ Admin Panel
+- **Role-Based Access:** Secure dashboards utilizing Firebase Auth and session cookies.
+- **Inventory Management:** Full CRUD operations for products, categories, and stock monitoring.
+- **Order Fulfillment:** Real-time order tracking and status updates.
+- **Analytics:** At-a-glance dashboard summarizing revenue, orders, and site health.
+
+---
+
+## ✦ Getting Started
+
+### Prerequisites
+Ensure you have the latest version of Node.js installed. You will also need a Firebase project and a Cloudinary account.
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd creamy-heaven
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables**
+   Create a `.env.local` file in the root directory and add your Firebase, Cloudinary, and Brevo credentials. (See `.env.example` if available).
+
+4. **Run the Development Server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Explore**
+   Navigate to `http://localhost:3000` to view the storefront, and `http://localhost:3000/adminlogin` to access the admin portal.
+
+---
+
+<div align="center">
+  <p>Designed and built with precision.</p>
+</div>
