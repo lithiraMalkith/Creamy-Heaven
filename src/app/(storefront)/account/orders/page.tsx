@@ -3,6 +3,7 @@ import { adminDb } from '@/lib/firebase-admin'
 import { ScrollReveal } from '@/components/storefront/scroll-reveal'
 import Link from 'next/link'
 import { formatPrice } from '@/lib/utils'
+import { fetchProducts } from '@/lib/data/products'
 
 export const metadata = {
   title: 'My Orders - Creamy Heaven',
@@ -19,6 +20,10 @@ export default async function AccountOrdersPage() {
 
   const orders = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as any[]
 
+  // Fetch products to fill in missing images for old orders
+  const allProducts = await fetchProducts()
+  const productsMap = new Map(allProducts.map(p => [p.id, p.images?.[0]]))
+
   return (
     <ScrollReveal direction="up" className="space-y-8">
       <div>
@@ -28,9 +33,15 @@ export default async function AccountOrdersPage() {
 
       {orders.length > 0 ? (
         <div className="bg-surface-container-lowest border border-brand-border rounded-xl overflow-hidden divide-y divide-brand-border">
-          {orders.map(order => (
+          {orders.map(order => {
+            const firstItemImage = order.items?.[0]?.image || (order.items?.[0]?.productId ? productsMap.get(order.items[0].productId) : null)
+            return (
             <div key={order.id} className="p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 flex-grow">
+              <div className="flex items-center gap-4 flex-grow">
+                {firstItemImage && (
+                  <img src={firstItemImage} alt={order.items[0].productName} className="w-16 h-16 rounded-lg object-cover border border-brand-border shrink-0" />
+                )}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 flex-grow">
                 <div>
                   <p className="font-label-sm text-label-sm text-brand-muted uppercase tracking-wider mb-1">Order</p>
                   <p className="font-label-md text-label-md text-brand-black">#{order.id.slice(0,8).toUpperCase()}</p>
@@ -48,12 +59,13 @@ export default async function AccountOrdersPage() {
                   <p className="font-price-display text-[18px] text-brand-black">{formatPrice(order.total)}</p>
                 </div>
               </div>
+              </div>
               
               <Link href={`/account/orders/${order.id}`} className="whitespace-nowrap px-6 py-2 rounded-full border border-brand-black text-brand-black font-label-md text-label-md hover:bg-brand-black hover:text-on-primary transition-colors text-center">
                 View Details
               </Link>
             </div>
-          ))}
+          )})}
         </div>
       ) : (
         <div className="bg-surface-container-lowest border border-brand-border rounded-xl p-12 text-center">

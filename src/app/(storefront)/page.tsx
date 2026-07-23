@@ -57,10 +57,10 @@ export default async function HomePage() {
       {/* Featured Products */}
       <section className="py-section-v-space bg-brand-cream px-margin-site-mobile md:px-margin-site max-w-max-width-content mx-auto w-full">
         <ScrollReveal direction="up">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 gap-4">
             <div>
-              <h2 className="font-headline-lg text-headline-lg text-brand-black mb-2">Signature Bakes</h2>
-              <p className="font-body-lead text-body-lead text-brand-muted">Our most loved creations</p>
+              <h2 className="font-headline-sm md:font-headline-lg text-headline-sm md:text-headline-lg text-brand-black mb-2">Signature Bakes</h2>
+              <p className="font-body-md md:font-body-lead text-body-md md:text-body-lead text-brand-muted">Our most loved creations</p>
             </div>
             <Link href="/shop" className="group flex items-center gap-2 font-label-md text-label-md text-brand-black border-b border-brand-black pb-1 hover:text-brand-muted hover:border-brand-muted transition-colors">
               View All 

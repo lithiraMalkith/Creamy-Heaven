@@ -8,7 +8,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
+import { signInWithEmailAndPassword, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth'
 import { auth, googleProvider } from '@/lib/firebase'
 import { Loader2 } from 'lucide-react'
 
@@ -18,6 +18,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
 
   async function exchangeToken(idToken: string) {
     const res = await fetch('/api/auth/session', {
@@ -63,6 +64,25 @@ export default function AdminLoginPage() {
     }
   }
 
+  async function handleForgotPassword() {
+    if (!email) {
+      setError('Please enter your email address first.')
+      return
+    }
+    setLoading(true)
+    setError('')
+    setMessage('')
+
+    try {
+      await sendPasswordResetEmail(auth, email)
+      setMessage('Password reset email sent. Please check your inbox.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send reset email')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-brand-cream flex items-center justify-center p-4">
       <div className="animate-fade-in-up w-full max-w-sm">
@@ -85,6 +105,11 @@ export default function AdminLoginPage() {
               {error}
             </div>
           )}
+          {message && (
+            <div className="mb-4 p-3 rounded-lg bg-brand-success/10 text-brand-success text-sm border border-brand-success/20">
+              {message}
+            </div>
+          )}
 
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div>
@@ -103,9 +128,19 @@ export default function AdminLoginPage() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-brand-black mb-1">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label htmlFor="password" className="block text-sm font-medium text-brand-black">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={loading}
+                  className="text-xs text-brand-black hover:underline disabled:opacity-50"
+                >
+                  Forgot Password?
+                </button>
+              </div>
               <input
                 id="password"
                 type="password"

@@ -82,7 +82,13 @@ export default function CustomerLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center p-4 relative">
+      <div className="absolute top-6 left-6">
+        <Link href="/" className="flex items-center gap-2 text-brand-black hover:text-brand-muted transition-colors font-label-md">
+          <span className="material-symbols-outlined">arrow_back</span>
+          Back to Home
+        </Link>
+      </div>
       <div className="w-full max-w-md bg-surface-container-lowest border border-brand-border rounded-2xl p-8 shadow-[0_10px_30px_rgba(21,18,16,0.05)]">
         
         <div className="text-center mb-8">

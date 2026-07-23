@@ -1,7 +1,7 @@
 import { requirePermission } from '@/lib/auth-guard'
 import { fetchRoles } from '@/lib/data/roles'
 import { inviteUser } from '../actions'
-import { FlashMessage } from '@/components/flash-message'
+import { parseFlash } from '@/lib/utils'
 
 export default async function InviteUserPage({ searchParams }: { searchParams: Promise<{ flash?: string }> }) {
   await requirePermission('users:write')
@@ -10,11 +10,25 @@ export default async function InviteUserPage({ searchParams }: { searchParams: P
 
   const builtInRoles = ['superadmin', 'manager', 'fulfillment', 'support']
   const allRoles = [...builtInRoles, ...customRoles.map((r) => r.name)]
+  
+  const flashData = parseFlash(flash)
 
   return (
     <div className="animate-fade-in-up max-w-lg mx-auto space-y-6">
-      <FlashMessage value={flash} />
       <h1 className="font-heading text-2xl font-semibold text-brand-black">Invite Admin User</h1>
+      
+      {flashData && (
+        <div className={`p-4 rounded-lg text-sm font-medium border ${
+          flashData.type === 'success' 
+            ? 'bg-brand-success/10 text-brand-success border-brand-success/20' 
+            : flashData.type === 'error'
+              ? 'bg-brand-danger/10 text-brand-danger border-brand-danger/20'
+              : 'bg-brand-cream text-brand-black border-brand-border'
+        }`}>
+          {flashData.message}
+        </div>
+      )}
+
       <form action={inviteUser} className="bg-brand-white rounded-xl border border-brand-border p-6 space-y-4">
         <div>
           <label className="block text-sm font-medium text-brand-black mb-1">Email *</label>

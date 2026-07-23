@@ -27,6 +27,11 @@ export default async function OrderConfirmationPage({
     currency: 'LKR',
   })
 
+  // Safely parse the createdAt date which might be a Firestore Timestamp
+  const orderDate = (order.createdAt as any)?.toDate 
+    ? (order.createdAt as any).toDate() 
+    : new Date(order.createdAt)
+
   return (
     <div className="max-w-3xl mx-auto px-margin-site-mobile md:px-margin-site pt-24 pb-section-v-space w-full flex flex-col items-center">
       
@@ -48,7 +53,7 @@ export default async function OrderConfirmationPage({
           </div>
           <div>
             <p className="font-label-sm text-label-sm text-brand-muted uppercase tracking-wider mb-1">Date</p>
-            <p className="font-label-md text-label-md text-brand-black">{new Date(order.createdAt).toLocaleDateString()}</p>
+            <p className="font-label-md text-label-md text-brand-black">{orderDate.toLocaleDateString()}</p>
           </div>
           <div>
             <p className="font-label-sm text-label-sm text-brand-muted uppercase tracking-wider mb-1">Payment Method</p>

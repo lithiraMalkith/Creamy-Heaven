@@ -16,6 +16,7 @@ export async function inviteUser(formData: FormData) {
     redirect('/admin/users/invite?flash=error:All fields are required')
   }
 
+  let errorMsg = ''
   try {
     // Create Firebase Auth user
     const userRecord = await adminAuth.createUser({
@@ -36,13 +37,16 @@ export async function inviteUser(formData: FormData) {
       isActive: true,
       createdAt: new Date(),
     })
-
-    revalidatePath('/admin/users')
-    redirect('/admin/users?flash=success:User invited successfully. They should reset their password.')
   } catch (error) {
-    const msg = encodeURIComponent(error instanceof Error ? error.message : 'Failed to create user')
-    redirect(`/admin/users/invite?flash=error:${msg}`)
+    errorMsg = encodeURIComponent(error instanceof Error ? error.message : 'Failed to create user')
   }
+
+  if (errorMsg) {
+    redirect(`/admin/users/invite?flash=error:${errorMsg}`)
+  }
+
+  revalidatePath('/admin/users')
+  redirect('/admin/users?flash=success:User invited successfully. They should reset their password.')
 }
 
 export async function updateUserRole(formData: FormData) {

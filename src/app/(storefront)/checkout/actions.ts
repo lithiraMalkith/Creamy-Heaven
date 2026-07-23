@@ -40,7 +40,8 @@ export async function placeOrderAction(formData: FormData) {
     sku: '', // not passed in cart currently, could fetch
     productName: item.name,
     quantity: item.quantity,
-    price: item.price
+    price: item.price,
+    image: item.image
   }))
 
   const orderData: Partial<Order> = {

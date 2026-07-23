@@ -9,7 +9,7 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
 
   return (
     <GsapProvider>
-      <div className="bg-brand-cream text-brand-black min-h-screen flex flex-col pt-[80px]">
+      <div className="bg-brand-cream text-brand-black min-h-screen flex flex-col pt-[80px] overflow-x-hidden">
         {/* TopNavBar */}
         <header className="bg-brand-white-translucent fixed top-0 w-full z-50 backdrop-blur-md border-b border-brand-border h-[80px]">
           <div className="flex justify-between items-center px-margin-site-mobile md:px-margin-site h-full max-w-max-width-content mx-auto">
@@ -37,11 +37,11 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
             </nav>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link href="/account" className="hidden md:block hover:scale-105 transition-transform duration-300 text-brand-black">
                 <span className="material-symbols-outlined text-[24px]">person</span>
               </Link>
-              <Link href="/cart" className="relative hover:scale-105 transition-transform duration-300 active:scale-95 text-brand-black">
+              <Link href="/cart" className="hidden md:block relative hover:scale-105 transition-transform duration-300 active:scale-95 text-brand-black">
                 <span className="material-symbols-outlined text-[24px]">shopping_bag</span>
                 {cartItemCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-brand-black text-brand-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">
