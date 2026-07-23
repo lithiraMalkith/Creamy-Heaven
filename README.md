@@ -18,6 +18,16 @@ Every scroll, hover, and page transition is choreographed to feel organic, premi
 
 ## ✦ Technology Stack
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js_15-151210?style=for-the-badge&logo=next.js&logoColor=F7F1E6" alt="Next.js" />
+  <img src="https://img.shields.io/badge/React_19-151210?style=for-the-badge&logo=react&logoColor=F7F1E6" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-151210?style=for-the-badge&logo=typescript&logoColor=F7F1E6" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Tailwind_v4-151210?style=for-the-badge&logo=tailwindcss&logoColor=F7F1E6" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/GSAP-151210?style=for-the-badge&logo=greensock&logoColor=F7F1E6" alt="GSAP" />
+  <img src="https://img.shields.io/badge/Firebase-151210?style=for-the-badge&logo=firebase&logoColor=F7F1E6" alt="Firebase" />
+  <img src="https://img.shields.io/badge/Cloudinary-151210?style=for-the-badge&logo=cloudinary&logoColor=F7F1E6" alt="Cloudinary" />
+</p>
+
 This platform leverages a modern, server-first architecture using Next.js, prioritizing performance, SEO, and developer experience.
 
 ### Core Framework
