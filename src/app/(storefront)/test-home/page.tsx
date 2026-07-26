@@ -1,10 +1,10 @@
 import { fetchFeaturedProducts, fetchPublishedProducts } from '@/lib/data/products'
-import TestHomeClient from './test-home/test-home-client'
+import TestHomeClient from './test-home-client'
 import type { Product } from '@/types'
 
 export const metadata = {
-  title: 'Creamy Heaven - Artisanal Cakes & Desserts',
-  description: 'Premium artisanal bakery offering handcrafted cakes, desserts, and custom orders in Sri Lanka.',
+  title: 'Creamy Heaven - Artisanal Bakery Showcase',
+  description: 'Experience 3D interactive dessert showcase and handcrafted bakes delivered across Sri Lanka.',
 }
 
 // Fallback high-quality product bakes with real product images if Firestore has no published items yet
@@ -95,7 +95,7 @@ const defaultFallbackProducts: Product[] = [
   },
 ]
 
-export default async function HomePage() {
+export default async function TestHomePage() {
   let products: Product[] = []
 
   try {
@@ -118,4 +118,3 @@ export default async function HomePage() {
 
   return <TestHomeClient initialProducts={finalProducts} />
 }
-

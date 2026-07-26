@@ -1,56 +1,54 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
 import { getCartItemCount } from '@/lib/cart'
+import { fetchCategories } from '@/lib/data/categories'
 import { GsapProvider } from '@/components/storefront/gsap-provider'
 import { MobileNav } from '@/components/storefront/mobile-nav'
+import { HeaderNav } from '@/components/storefront/header-nav'
+import { StorefrontSearch } from '@/components/storefront/storefront-search'
 
 export default async function StorefrontLayout({ children }: { children: ReactNode }) {
-  const cartItemCount = await getCartItemCount()
+  const [cartItemCount, categories] = await Promise.all([
+    getCartItemCount(),
+    fetchCategories(),
+  ])
 
   return (
     <GsapProvider>
       <div className="bg-brand-cream text-brand-black min-h-screen flex flex-col pt-[80px] overflow-x-hidden">
         {/* TopNavBar */}
         <header className="bg-brand-white-translucent fixed top-0 w-full z-50 backdrop-blur-md border-b border-brand-border h-[80px]">
-          <div className="flex justify-between items-center px-margin-site-mobile md:px-margin-site h-full max-w-max-width-content mx-auto">
-            <Link href="/" className="font-headline-md text-headline-md font-bold text-brand-black">
-              Creamy Heaven
-            </Link>
+          <div className="flex justify-between items-center px-margin-site-mobile md:px-margin-site h-full max-w-max-width-content mx-auto gap-4">
+            <div className="flex items-center gap-8 lg:gap-10">
+              <Link href="/" className="text-xl font-bold tracking-[-0.015em] text-[#151413] shrink-0">
+                Creamy Heaven
+              </Link>
 
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex gap-6 items-center">
-              <Link href="/" className="text-brand-muted hover:text-brand-black transition-colors font-label-md text-label-md hover:scale-105 duration-300">
-                Home
-              </Link>
-              <Link href="/shop" className="text-brand-muted hover:text-brand-black transition-colors font-label-md text-label-md hover:scale-105 duration-300">
-                Shop
-              </Link>
-              <Link href="/about" className="text-brand-muted hover:text-brand-black transition-colors font-label-md text-label-md hover:scale-105 duration-300">
-                About
-              </Link>
-              <Link href="/contact" className="text-brand-muted hover:text-brand-black transition-colors font-label-md text-label-md hover:scale-105 duration-300">
-                Contact
-              </Link>
-              <Link href="/faqs" className="text-brand-muted hover:text-brand-black transition-colors font-label-md text-label-md hover:scale-105 duration-300">
-                FAQs
-              </Link>
-            </nav>
+              {/* Desktop Nav */}
+              <HeaderNav />
+            </div>
 
-            {/* Right Actions */}
-            <div className="flex items-center gap-2 sm:gap-4">
-              <Link href="/account" className="hidden md:block hover:scale-105 transition-transform duration-300 text-brand-black">
-                <span className="material-symbols-outlined text-[24px]">person</span>
-              </Link>
-              <Link href="/cart" className="hidden md:block relative hover:scale-105 transition-transform duration-300 active:scale-95 text-brand-black">
-                <span className="material-symbols-outlined text-[24px]">shopping_bag</span>
+            {/* Right Actions: Search + Cart + Account */}
+            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+              {/* Responsive Search Input / Icon Popup */}
+              <StorefrontSearch />
+
+              {/* Cart Action */}
+              <Link href="/cart" className="relative hover:scale-105 transition-transform duration-200 active:scale-95 text-brand-black p-2 rounded-full hover:bg-black/5" aria-label="Cart">
+                <span className="material-symbols-outlined text-[22px]">shopping_bag</span>
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-brand-black text-brand-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">
+                  <span className="absolute top-0 right-0 bg-brand-black text-brand-white text-[10px] w-4.5 h-4.5 flex items-center justify-center rounded-full font-bold">
                     {cartItemCount}
                   </span>
                 )}
               </Link>
 
-              <MobileNav cartItemCount={cartItemCount} />
+              {/* Account Action */}
+              <Link href="/account" className="hidden sm:flex hover:scale-105 transition-transform duration-200 text-brand-black p-2 rounded-full hover:bg-black/5" aria-label="My Account">
+                <span className="material-symbols-outlined text-[22px]">person</span>
+              </Link>
+
+              <MobileNav cartItemCount={cartItemCount} categories={categories} />
             </div>
           </div>
         </header>

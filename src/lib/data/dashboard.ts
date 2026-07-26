@@ -12,12 +12,26 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
   weekStart.setDate(weekStart.getDate() - 7)
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  // Fetch all orders from this month (covers today + week + month queries)
-  const ordersSnapshot = await adminDb
-    .collection('orders')
-    .where('createdAt', '>=', monthStart)
-    .orderBy('createdAt', 'desc')
-    .get()
+  // Fetch all dashboard stats in parallel using Promise.all
+  const [ordersSnapshot, pendingSnapshot, productsSnapshot, customersSnapshot] = await Promise.all([
+    adminDb
+      .collection('orders')
+      .where('createdAt', '>=', monthStart)
+      .orderBy('createdAt', 'desc')
+      .get(),
+    adminDb
+      .collection('orders')
+      .where('status', '==', 'pending')
+      .count()
+      .get(),
+    adminDb
+      .collection('products')
+      .get(),
+    adminDb
+      .collection('customers')
+      .count()
+      .get(),
+  ])
 
   const allOrders = ordersSnapshot.docs.map((doc) => {
     const data = doc.data()
@@ -45,24 +59,13 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
     .filter((o) => o.status !== 'cancelled')
     .reduce((sum, o) => sum + o.total, 0)
 
-  // Pending orders count
-  const pendingSnapshot = await adminDb
-    .collection('orders')
-    .where('status', '==', 'pending')
-    .count()
-    .get()
+  // Aggregation counts
   const pendingOrders = pendingSnapshot.data().count
-
-  // Product counts
-  const productsSnapshot = await adminDb.collection('products').get()
   const totalProducts = productsSnapshot.size
   const lowStockProducts = productsSnapshot.docs.filter((doc) => {
     const qty = doc.data().stockQty ?? 0
     return qty > 0 && qty <= 10
   }).length
-
-  // Customer count
-  const customersSnapshot = await adminDb.collection('customers').count().get()
   const totalCustomers = customersSnapshot.data().count
 
   // Revenue data for chart (last 7 days)

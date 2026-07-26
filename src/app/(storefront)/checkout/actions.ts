@@ -7,49 +7,67 @@ import type { Order } from '@/types'
 
 export async function placeOrderAction(formData: FormData) {
   const cart = await getCart()
-  
+
   if (cart.items.length === 0) {
-    throw new Error('Cart is empty')
+    redirect('/cart')
   }
 
-  // Extract customer info from form
-  const customerInfo = {
-    name: formData.get('name') as string,
-    email: formData.get('email') as string,
-    phone: formData.get('phone') as string,
+  // Extract customer info
+  const name = (formData.get('name') as string)?.trim() || 'Valued Customer'
+  const email = (formData.get('email') as string)?.trim() || ''
+  const phone = (formData.get('phone') as string)?.trim() || ''
+
+  const rawFulfillment = (formData.get('fulfillment') as string)?.toLowerCase()
+  const fulfillmentType: 'delivery' | 'pickup' =
+    rawFulfillment === 'pickup' ? 'pickup' : 'delivery'
+
+  let shippingAddress:
+    | {
+        addressLine1: string
+        city: string
+        district: string
+        postalCode: string
+      }
+    | undefined = undefined
+
+  if (fulfillmentType === 'delivery') {
+    const address = (formData.get('address') as string)?.trim() || 'Colombo'
+    const city = (formData.get('city') as string)?.trim() || 'Colombo'
+    const postal = (formData.get('postal') as string)?.trim() || ''
+
+    shippingAddress = {
+      addressLine1: address,
+      city: city,
+      district: city,
+      postalCode: postal,
+    }
   }
 
-  const fulfillmentType = formData.get('fulfillment') as 'delivery' | 'pickup'
-  
-  const shippingAddress = fulfillmentType === 'delivery' ? {
-    addressLine1: formData.get('address') as string,
-    city: formData.get('city') as string,
-    district: formData.get('city') as string, // Just a filler since form only has city
-    postalCode: formData.get('postal') as string,
-  } : undefined
-
-  const notes = formData.get('notes') as string
+  const notes = (formData.get('notes') as string)?.trim() || ''
 
   // Calculate totals
-  const subTotal = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-  const deliveryFee = fulfillmentType === 'delivery' ? 500 : 0 // flat fee for demo
+  const subTotal = cart.items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  )
+  const deliveryFee = fulfillmentType === 'delivery' ? 500 : 0
   const total = subTotal + deliveryFee
 
-  const items = cart.items.map(item => ({
+  const items = cart.items.map((item) => ({
     productId: item.productId,
-    sku: '', // not passed in cart currently, could fetch
+    sku: '',
     productName: item.name,
     quantity: item.quantity,
     price: item.price,
-    image: item.image
+    image: item.image || '',
   }))
 
   const orderData: Partial<Order> = {
     customer: {
       uid: 'guest',
-      name: customerInfo.name,
-      email: customerInfo.email,
-      phone: customerInfo.phone,
+      name,
+      email,
+      phone,
     },
     items,
     status: 'pending',
@@ -64,8 +82,8 @@ export async function placeOrderAction(formData: FormData) {
   }
 
   const docRef = await adminDb.collection('orders').add(orderData)
-  
+
   await clearCart()
-  
+
   redirect(`/order-confirmation/${docRef.id}`)
 }

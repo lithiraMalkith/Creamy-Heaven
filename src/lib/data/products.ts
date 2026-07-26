@@ -15,9 +15,13 @@ function toProduct(doc: FirebaseFirestore.QueryDocumentSnapshot): Product {
   } as Product
 }
 
+const normalize = (str?: string) =>
+  (str || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+
 export async function fetchProducts(params?: {
   q?: string
   category?: string
+  subCategory?: string
   visibility?: string
   page?: number
 }): Promise<Product[]> {
@@ -26,10 +30,6 @@ export async function fetchProducts(params?: {
     .orderBy('createdAt', 'desc')
     .limit(100)
 
-  if (params?.category) {
-    query = query.where('category', '==', params.category)
-  }
-
   if (params?.visibility) {
     query = query.where('visibility', '==', params.visibility)
   }
@@ -37,13 +37,44 @@ export async function fetchProducts(params?: {
   const snapshot = await query.get()
   let items = snapshot.docs.map(toProduct)
 
+  // Filter Category
+  if (params?.category && params.category !== 'all') {
+    const targetCat = normalize(params.category)
+    items = items.filter((item) => {
+      const itemCat = normalize(item.category)
+      return (
+        itemCat === targetCat ||
+        (targetCat === 'cakes' && (itemCat.includes('cake') || itemCat.includes('bake'))) ||
+        (targetCat === 'desserts' && (itemCat.includes('dessert') || itemCat.includes('mousse'))) ||
+        (targetCat === 'giftsets' && itemCat.includes('gift'))
+      )
+    })
+  }
+
+  // Filter SubCategory
+  if (params?.subCategory && params.subCategory !== 'all') {
+    const targetSub = normalize(params.subCategory)
+    items = items.filter((item) => {
+      const itemSub = normalize(item.subCategory)
+      const itemName = normalize(item.name)
+      return (
+        itemSub === targetSub ||
+        itemSub.includes(targetSub) ||
+        itemName.includes(targetSub)
+      )
+    })
+  }
+
+  // Filter Keyword Search
   if (params?.q) {
     const q = params.q.toLowerCase()
     items = items.filter(
       (item) =>
         item.name.toLowerCase().includes(q) ||
         item.sku.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q)
+        item.category.toLowerCase().includes(q) ||
+        item.subCategory.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q)
     )
   }
 
@@ -60,6 +91,7 @@ export async function fetchProduct(id: string): Promise<Product | null> {
 export async function fetchPublishedProducts(params?: {
   q?: string
   category?: string
+  subCategory?: string
   page?: number
 }): Promise<Product[]> {
   return fetchProducts({ ...params, visibility: 'published' })
@@ -86,4 +118,3 @@ export async function fetchFeaturedProducts(): Promise<Product[]> {
   
   return snapshot.docs.map(toProduct)
 }
-
