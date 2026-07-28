@@ -106,6 +106,80 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </div>
         </div>
 
+        {/* Announcement Bar */}
+        <div className="bg-brand-white rounded-xl border border-brand-border p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-brand-muted uppercase tracking-wider">Top Announcement Bar</h2>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="announcementsEnabled"
+                defaultChecked={settings.announcementsEnabled ?? true}
+                className="w-4 h-4 rounded border-brand-border text-brand-black"
+              />
+              <span className="text-sm font-medium text-brand-black">Enable Announcement Bar</span>
+            </label>
+          </div>
+          <p className="text-xs text-brand-muted">
+            Configure rotating promotional messages shown at the top of the storefront.
+          </p>
+
+          <input type="hidden" name="announcementCount" value={settings.announcements?.length ?? 0} />
+
+          {settings.announcements && settings.announcements.length > 0 ? (
+            <div className="space-y-3">
+              {settings.announcements.map((item, i) => (
+                <div key={item.id} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-3 rounded-lg bg-brand-cream/50 border border-brand-border/40">
+                  <input type="hidden" name={`announcement_id_${i}`} value={item.id} />
+                  <div className="flex-1">
+                    <input
+                      name={`announcement_text_${i}`}
+                      defaultValue={item.text}
+                      className="form-input text-sm"
+                      placeholder="Promo text (e.g. 🚚 Free Delivery in Colombo)"
+                    />
+                  </div>
+                  <div className="w-full sm:w-48">
+                    <input
+                      name={`announcement_link_${i}`}
+                      defaultValue={item.link ?? ''}
+                      className="form-input text-xs"
+                      placeholder="Optional link (/shop)"
+                    />
+                  </div>
+                  <label className="flex items-center gap-1.5 text-sm whitespace-nowrap shrink-0 self-end sm:self-center">
+                    <input
+                      type="checkbox"
+                      name={`announcement_enabled_${i}`}
+                      defaultChecked={item.enabled}
+                      className="w-4 h-4 rounded border-brand-border"
+                    />
+                    Active
+                  </label>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-brand-muted">No announcements configured.</p>
+          )}
+
+          <div className="pt-4 border-t border-brand-border">
+            <p className="text-xs font-medium text-brand-black mb-2">Add new announcement message:</p>
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <input
+                name="new_announcement_text"
+                className="form-input flex-1 text-sm"
+                placeholder="New promo message (e.g. 🎉 10% Off Your First Order)"
+              />
+              <input
+                name="new_announcement_link"
+                className="form-input w-full sm:w-48 text-xs"
+                placeholder="Optional link (/shop)"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Tracking Pixels */}
         <div className="bg-brand-white rounded-xl border border-brand-border p-6 space-y-4">
           <h2 className="text-sm font-semibold text-brand-muted uppercase tracking-wider">Tracking</h2>

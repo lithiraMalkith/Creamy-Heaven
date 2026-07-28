@@ -1,17 +1,33 @@
 import { adminDb } from '@/lib/firebase-admin'
 import type { Order, OrderStatus } from '@/types'
 
+function parseTimestamp(ts: unknown): Date {
+  if (!ts) return new Date()
+  if (typeof (ts as { toDate?: () => Date }).toDate === 'function') {
+    return (ts as { toDate: () => Date }).toDate()
+  }
+  if (ts instanceof Date) return ts
+  if (typeof ts === 'string' || typeof ts === 'number') {
+    const d = new Date(ts)
+    if (!isNaN(d.getTime())) return d
+  }
+  return new Date()
+}
+
 function toOrder(doc: FirebaseFirestore.QueryDocumentSnapshot): Order {
   const data = doc.data()
+  const fallbackRef = `CH-${doc.id.substring(0, 8).toUpperCase()}`
+
   return {
     id: doc.id,
+    orderRef: data.orderRef && data.orderRef.trim() ? data.orderRef : fallbackRef,
     ...data,
     statusHistory: (data.statusHistory ?? []).map((entry: Record<string, unknown>) => ({
       ...entry,
-      timestamp: (entry.timestamp as FirebaseFirestore.Timestamp)?.toDate?.() ?? new Date(),
+      timestamp: parseTimestamp(entry.timestamp),
     })),
-    createdAt: data.createdAt?.toDate?.() ?? new Date(),
-    updatedAt: data.updatedAt?.toDate?.() ?? new Date(),
+    createdAt: parseTimestamp(data.createdAt),
+    updatedAt: parseTimestamp(data.updatedAt),
   } as Order
 }
 

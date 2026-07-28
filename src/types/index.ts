@@ -207,6 +207,13 @@ export interface Message {
 
 // ── Settings ──────────────────────────────────────────────────────
 
+export interface AnnouncementItem {
+  id: string
+  text: string
+  enabled: boolean
+  link?: string
+}
+
 export interface SiteSettings {
   siteName: string
   siteDescription: string
@@ -220,6 +227,8 @@ export interface SiteSettings {
   socialLinks: { tiktok?: string; instagram?: string; facebook?: string }
   metaPixelId?: string
   tiktokPixelId?: string
+  announcementsEnabled?: boolean
+  announcements?: AnnouncementItem[]
 }
 
 export interface DeliveryZone {

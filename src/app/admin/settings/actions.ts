@@ -45,6 +45,36 @@ export async function updateSettings(formData: FormData) {
     })
   }
 
+  // Parse announcements from form
+  const announcementCount = Number(formData.get('announcementCount') ?? '0')
+  const announcements = []
+  for (let i = 0; i < announcementCount; i++) {
+    const text = (formData.get(`announcement_text_${i}`) as string)?.trim()
+    const enabled = formData.get(`announcement_enabled_${i}`) === 'on'
+    const link = (formData.get(`announcement_link_${i}`) as string)?.trim() || ''
+    const id = (formData.get(`announcement_id_${i}`) as string) || `ann_${i}`
+    if (text) {
+      announcements.push({
+        id,
+        text,
+        enabled,
+        ...(link ? { link } : {}),
+      })
+    }
+  }
+
+  // Add new announcement if provided
+  const newAnnouncementText = (formData.get('new_announcement_text') as string)?.trim()
+  const newAnnouncementLink = (formData.get('new_announcement_link') as string)?.trim() || ''
+  if (newAnnouncementText) {
+    announcements.push({
+      id: `ann_${Date.now()}`,
+      text: newAnnouncementText,
+      enabled: true,
+      ...(newAnnouncementLink ? { link: newAnnouncementLink } : {}),
+    })
+  }
+
   await adminDb.collection('settings').doc('site').set({
     siteName: parsed.data.siteName,
     siteDescription: parsed.data.siteDescription ?? '',
@@ -62,8 +92,11 @@ export async function updateSettings(formData: FormData) {
     },
     metaPixelId: parsed.data.metaPixelId ?? '',
     tiktokPixelId: parsed.data.tiktokPixelId ?? '',
+    announcementsEnabled: parsed.data.announcementsEnabled ?? false,
+    announcements,
   }, { merge: true })
 
   revalidatePath('/admin/settings')
+  revalidatePath('/', 'layout')
   redirect('/admin/settings?flash=success:Settings saved')
 }

@@ -109,6 +109,7 @@ export const siteSettingsSchema = z.object({
   socialFacebook: z.string().optional(),
   metaPixelId: z.string().optional(),
   tiktokPixelId: z.string().optional(),
+  announcementsEnabled: z.string().optional().transform(v => v === 'on' || v === 'true'),
 })
 
 export type SiteSettingsFormData = z.infer<typeof siteSettingsSchema>

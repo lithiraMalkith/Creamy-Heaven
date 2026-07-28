@@ -1,6 +1,13 @@
 import { adminDb } from '@/lib/firebase-admin'
 import type { SiteSettings } from '@/types'
 
+const DEFAULT_ANNOUNCEMENTS = [
+  { id: '1', text: '🚚 Free Delivery for orders within Colombo area.', enabled: true },
+  { id: '2', text: '🎉 Special Discounts on selected artisanal treats.', enabled: true },
+  { id: '3', text: '🔥 Limited-Time Offers & seasonal celebration specials.', enabled: true },
+  { id: '4', text: '💳 Secure Cash on Delivery (COD) & Express Delivery.', enabled: true },
+]
+
 export async function fetchSettings(): Promise<SiteSettings> {
   const doc = await adminDb.collection('settings').doc('site').get()
 
@@ -17,8 +24,15 @@ export async function fetchSettings(): Promise<SiteSettings> {
       pickupEnabled: true,
       deliveryZones: [],
       socialLinks: {},
+      announcementsEnabled: true,
+      announcements: DEFAULT_ANNOUNCEMENTS,
     }
   }
 
-  return doc.data() as SiteSettings
+  const data = doc.data() as SiteSettings
+  return {
+    ...data,
+    announcementsEnabled: data.announcementsEnabled ?? true,
+    announcements: data.announcements && data.announcements.length > 0 ? data.announcements : DEFAULT_ANNOUNCEMENTS,
+  }
 }

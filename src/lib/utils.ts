@@ -60,26 +60,49 @@ export function slugify(str: string): string {
 }
 
 /**
- * Format a date for display in the admin panel
+ * Format a date for display in the admin panel with Sri Lanka timezone (Asia/Colombo)
  */
 export function formatDate(date: Date | string | null | undefined): string {
   if (!date) return '—'
   const d = typeof date === 'string' ? new Date(date) : date
-  return d.toLocaleDateString('en-LK', {
+  if (isNaN(d.getTime())) return '—'
+  return d.toLocaleString('en-US', {
+    timeZone: 'Asia/Colombo',
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    hour12: true,
   })
 }
 
 /**
- * Format a date as a long date string
+ * Format date & time with year and 12-hour AM/PM in Sri Lanka timezone
+ */
+export function formatDateTime(date: Date | string | null | undefined): string {
+  if (!date) return '—'
+  const d = typeof date === 'string' ? new Date(date) : date
+  if (isNaN(d.getTime())) return '—'
+  return d.toLocaleString('en-US', {
+    timeZone: 'Asia/Colombo',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  })
+}
+
+/**
+ * Format a date as a long date string in Sri Lanka timezone
  */
 export function formatDateLong(date: Date | string | null | undefined): string {
   if (!date) return '—'
   const d = typeof date === 'string' ? new Date(date) : date
-  return d.toLocaleDateString('en-LK', {
+  if (isNaN(d.getTime())) return '—'
+  return d.toLocaleDateString('en-US', {
+    timeZone: 'Asia/Colombo',
     month: 'long',
     day: 'numeric',
     year: 'numeric',

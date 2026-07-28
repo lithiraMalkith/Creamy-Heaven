@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { adminDb } from '@/lib/firebase-admin'
 import { getCart, clearCart } from '@/lib/cart'
+import { generateOrderRef } from '@/lib/utils'
 import type { Order } from '@/types'
 
 export async function placeOrderAction(formData: FormData) {
@@ -62,7 +63,10 @@ export async function placeOrderAction(formData: FormData) {
     image: item.image || '',
   }))
 
+  const orderRef = generateOrderRef()
+
   const orderData: Partial<Order> = {
+    orderRef,
     customer: {
       uid: 'guest',
       name,
@@ -72,11 +76,20 @@ export async function placeOrderAction(formData: FormData) {
     items,
     status: 'pending',
     fulfilmentType: fulfillmentType,
+    paymentMethod: 'cod',
     ...(shippingAddress ? { deliveryAddress: shippingAddress } : {}),
     subtotal: subTotal,
     deliveryFee,
     total,
     ...(notes ? { notes } : {}),
+    statusHistory: [
+      {
+        status: 'pending',
+        timestamp: new Date(),
+        updatedBy: 'Customer',
+        note: 'Order placed online',
+      },
+    ],
     createdAt: new Date(),
     updatedAt: new Date(),
   }

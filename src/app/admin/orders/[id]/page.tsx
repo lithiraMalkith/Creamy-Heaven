@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, Package, Truck, MapPin, User, Phone, Mail } from 'lucide-react'
 import { requirePermission } from '@/lib/auth-guard'
 import { fetchOrder } from '@/lib/data/orders'
-import { formatPrice, formatDate, formatDateLong } from '@/lib/utils'
+import { formatPrice, formatDate, formatDateLong, formatDateTime } from '@/lib/utils'
 import { StatusBadge } from '@/components/status-badge'
 import { FlashMessage } from '@/components/flash-message'
 import { updateOrderStatus, updateOrderDetails } from '../actions'
@@ -52,7 +52,7 @@ export default async function OrderDetailPage({
             <h1 className="font-heading text-2xl font-semibold text-brand-black">{order.orderRef}</h1>
             <StatusBadge status={order.status} />
           </div>
-          <p className="text-brand-muted text-sm mt-1">{formatDateLong(order.createdAt)}</p>
+          <p className="text-brand-muted text-sm mt-1">Placed on {formatDateTime(order.createdAt)}</p>
         </div>
         <div>
           <Link href={`/admin/orders/${order.id}/edit`} className="btn-hover px-4 py-2 bg-brand-black text-brand-white rounded-lg text-sm font-medium">
@@ -116,7 +116,7 @@ export default async function OrderDetailPage({
                   </div>
                   <div className="pb-4">
                     <StatusBadge status={entry.status} />
-                    <p className="text-xs text-brand-muted mt-1 tabular-nums">{formatDate(entry.timestamp)}</p>
+                    <p className="text-xs text-brand-muted mt-1 tabular-nums">{formatDateTime(entry.timestamp)}</p>
                     <p className="text-xs text-brand-muted">by {entry.updatedBy}</p>
                     {entry.note && <p className="text-sm text-brand-black-soft mt-1">{entry.note}</p>}
                   </div>

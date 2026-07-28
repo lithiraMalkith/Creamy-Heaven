@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Plus, Search } from 'lucide-react'
 import { requirePermission } from '@/lib/auth-guard'
 import { fetchOrders } from '@/lib/data/orders'
-import { formatPrice, formatDate } from '@/lib/utils'
+import { formatPrice, formatDateTime } from '@/lib/utils'
 import { StatusBadge } from '@/components/status-badge'
 import { FlashMessage } from '@/components/flash-message'
 import { OrderRowActions } from './row-actions'
@@ -117,7 +117,7 @@ export default async function OrdersPage({
                     <StatusBadge status={order.status} />
                   </td>
                   <td>
-                    <span className="text-sm text-brand-muted tabular-nums">{formatDate(order.createdAt)}</span>
+                    <span className="text-xs text-brand-muted tabular-nums whitespace-nowrap">{formatDateTime(order.createdAt)}</span>
                   </td>
                   <td>
                     <OrderRowActions id={order.id} />
