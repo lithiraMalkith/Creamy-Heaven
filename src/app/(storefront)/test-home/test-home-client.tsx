@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import {
   ArrowRight,
   ChevronDown,
@@ -15,7 +16,19 @@ import {
   Quote,
   CheckCircle2,
 } from 'lucide-react'
-import ModelCanvas from '@/components/home-redesign/ModelCanvas'
+// Lazy-load the 3D model canvas — defers ~2.5MB of Three.js + GLTF from the
+// critical path. SSR disabled because Three.js requires browser APIs (WebGL).
+const ModelCanvas = dynamic(
+  () => import('@/components/home-redesign/ModelCanvas'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="w-10 h-10 border-3 border-brand-black/15 border-t-brand-black rounded-full animate-spin" />
+      </div>
+    ),
+  }
+)
 import { GSAPTextReveal } from '@/components/home-redesign/GSAPTextReveal'
 import { ProductCard } from '@/components/storefront/product-card'
 import type { Product } from '@/types'

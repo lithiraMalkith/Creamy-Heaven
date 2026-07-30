@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import { adminDb } from '@/lib/firebase-admin'
 import type { Category } from '@/types'
 
@@ -64,7 +65,7 @@ function toCategory(doc: FirebaseFirestore.QueryDocumentSnapshot): Category {
   } as Category
 }
 
-export async function fetchCategories(): Promise<Category[]> {
+async function _fetchCategories(): Promise<Category[]> {
   try {
     const snapshot = await adminDb
       .collection('categories')
@@ -81,6 +82,16 @@ export async function fetchCategories(): Promise<Category[]> {
 
   return defaultFallbackCategories
 }
+
+/**
+ * Cached fetchCategories — revalidates every 5 minutes or on-demand via
+ * revalidateTag('categories'). Categories change at most weekly.
+ */
+export const fetchCategories = unstable_cache(
+  _fetchCategories,
+  ['categories'],
+  { tags: ['categories'], revalidate: 300 }
+)
 
 export async function fetchCategory(id: string): Promise<Category | null> {
   try {

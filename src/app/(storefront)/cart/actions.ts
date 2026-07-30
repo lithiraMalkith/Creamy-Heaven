@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidateTag } from 'next/cache'
 import { getCart, setCart, CartItem } from '@/lib/cart'
 
 export async function addToCartAction(item: CartItem) {
@@ -15,8 +15,7 @@ export async function addToCartAction(item: CartItem) {
   }
   
   await setCart(cart)
-  revalidatePath('/cart')
-  revalidatePath('/') // update layout cart badge
+  revalidateTag('cart', 'max')
 }
 
 export async function updateCartQuantity(productId: string, quantity: number) {
@@ -31,8 +30,7 @@ export async function updateCartQuantity(productId: string, quantity: number) {
     }
     
     await setCart(cart)
-    revalidatePath('/cart')
-    revalidatePath('/')
+    revalidateTag('cart', 'max')
   }
 }
 
@@ -41,6 +39,5 @@ export async function removeFromCart(productId: string) {
   cart.items = cart.items.filter(i => i.productId !== productId)
   
   await setCart(cart)
-  revalidatePath('/cart')
-  revalidatePath('/')
+  revalidateTag('cart', 'max')
 }

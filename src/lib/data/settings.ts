@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import { adminDb } from '@/lib/firebase-admin'
 import type { SiteSettings } from '@/types'
 
@@ -8,7 +9,7 @@ const DEFAULT_ANNOUNCEMENTS = [
   { id: '4', text: '💳 Secure Cash on Delivery (COD) & Express Delivery.', enabled: true },
 ]
 
-export async function fetchSettings(): Promise<SiteSettings> {
+async function _fetchSettings(): Promise<SiteSettings> {
   const doc = await adminDb.collection('settings').doc('site').get()
 
   if (!doc.exists) {
@@ -36,3 +37,14 @@ export async function fetchSettings(): Promise<SiteSettings> {
     announcements: data.announcements && data.announcements.length > 0 ? data.announcements : DEFAULT_ANNOUNCEMENTS,
   }
 }
+
+/**
+ * Cached fetchSettings — revalidates every 5 minutes or on-demand via
+ * revalidateTag('site-settings'). Settings change at most once a day,
+ * so hitting Firestore on every navigation is wasteful.
+ */
+export const fetchSettings = unstable_cache(
+  _fetchSettings,
+  ['site-settings'],
+  { tags: ['site-settings'], revalidate: 300 }
+)

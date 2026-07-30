@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import { adminDb } from '@/lib/firebase-admin'
 import type { Product } from '@/types'
 
@@ -88,13 +89,30 @@ export async function fetchProduct(id: string): Promise<Product | null> {
     : null
 }
 
-export async function fetchPublishedProducts(params?: {
+async function _fetchPublishedProducts(params?: {
   q?: string
   category?: string
   subCategory?: string
   page?: number
 }): Promise<Product[]> {
   return fetchProducts({ ...params, visibility: 'published' })
+}
+
+export const fetchPublishedProducts = (params?: {
+  q?: string
+  category?: string
+  subCategory?: string
+  page?: number
+}) => {
+  // If there is an active search query or filter, query live; otherwise use 60s cache
+  if (params?.q || params?.category || params?.subCategory) {
+    return _fetchPublishedProducts(params)
+  }
+  return unstable_cache(
+    () => _fetchPublishedProducts(params),
+    ['published-products-all'],
+    { tags: ['products'], revalidate: 60 }
+  )()
 }
 
 export async function fetchProductBySlug(slug: string): Promise<Product | null> {
@@ -108,7 +126,7 @@ export async function fetchProductBySlug(slug: string): Promise<Product | null> 
   return toProduct(snapshot.docs[0])
 }
 
-export async function fetchFeaturedProducts(): Promise<Product[]> {
+async function _fetchFeaturedProducts(): Promise<Product[]> {
   const snapshot = await adminDb
     .collection('products')
     .where('visibility', '==', 'published')
@@ -118,3 +136,14 @@ export async function fetchFeaturedProducts(): Promise<Product[]> {
   
   return snapshot.docs.map(toProduct)
 }
+
+/**
+ * Cached fetchFeaturedProducts — revalidates every 2 minutes or on-demand
+ * via revalidateTag('featured-products'). Prevents Firestore hit on every
+ * homepage load.
+ */
+export const fetchFeaturedProducts = unstable_cache(
+  _fetchFeaturedProducts,
+  ['featured-products'],
+  { tags: ['featured-products'], revalidate: 120 }
+)

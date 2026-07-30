@@ -23,7 +23,7 @@ export function StorefrontSearch() {
   const mobileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  // Debounced search fetch
+  // Debounced search fetch with AbortController to cancel stale requests
   useEffect(() => {
     if (!query.trim()) {
       setResults([])
@@ -31,23 +31,32 @@ export function StorefrontSearch() {
       return
     }
 
+    const abortController = new AbortController()
+
     const timer = setTimeout(async () => {
       setIsLoading(true)
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+          signal: abortController.signal,
+        })
         if (res.ok) {
           const data = await res.json()
           setResults(data.products || [])
           setIsOpen(true)
         }
       } catch (err) {
+        // Ignore abort errors — they're expected when a newer request fires
+        if (err instanceof DOMException && err.name === 'AbortError') return
         console.error('Failed to fetch search suggestions', err)
       } finally {
         setIsLoading(false)
       }
-    }, 150)
+    }, 350)
 
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+      abortController.abort()
+    }
   }, [query])
 
   // Close dropdown on outside click

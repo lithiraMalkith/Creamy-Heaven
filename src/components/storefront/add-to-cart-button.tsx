@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { addToCartAction } from '@/app/(storefront)/cart/actions'
 
 interface AddToCartButtonProps {
@@ -15,38 +15,41 @@ interface AddToCartButtonProps {
   quantity?: number
 }
 
+// Hoist formatter outside the component to avoid re-creating on every render
+const formatter = new Intl.NumberFormat('en-LK', {
+  style: 'currency',
+  currency: 'LKR',
+})
+
 export function AddToCartButton({ product, compact = false, quantity = 1 }: AddToCartButtonProps) {
-  const [isPending, setIsPending] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const [added, setAdded] = useState(false)
 
-  const handleAdd = async (e: React.MouseEvent) => {
+  const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault()
-    setIsPending(true)
     
-    try {
-      await addToCartAction({
-        productId: product.id,
-        name: product.name,
-        price: product.price,
-        slug: product.slug,
-        image: product.image,
-        quantity,
-      })
-      
-      setAdded(true)
-      setTimeout(() => setAdded(false), 2000)
-    } catch (error) {
-      console.error('Failed to add to cart', error)
-      alert('Could not add item to cart. Please try again.')
-    } finally {
-      setIsPending(false)
-    }
-  }
+    // Show "Added" feedback immediately (optimistic UI)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2000)
 
-  const formatter = new Intl.NumberFormat('en-LK', {
-    style: 'currency',
-    currency: 'LKR',
-  })
+    // Run the server action in a non-blocking transition —
+    // the UI stays responsive while the mutation happens in the background
+    startTransition(async () => {
+      try {
+        await addToCartAction({
+          productId: product.id,
+          name: product.name,
+          price: product.price,
+          slug: product.slug,
+          image: product.image,
+          quantity,
+        })
+      } catch (error) {
+        console.error('Failed to add to cart', error)
+        setAdded(false)
+      }
+    })
+  }
 
   if (compact) {
     return (

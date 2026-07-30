@@ -1,11 +1,8 @@
+import { unstable_cache } from 'next/cache'
 import { adminDb } from '@/lib/firebase-admin'
 import type { DashboardStats } from '@/types'
 
-/**
- * Aggregates dashboard statistics from orders, products, and customers.
- * Called directly from the dashboard Server Component.
- */
-export async function fetchDashboardStats(): Promise<DashboardStats> {
+async function _fetchDashboardStats(): Promise<DashboardStats> {
   const now = new Date()
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const weekStart = new Date(todayStart)
@@ -146,3 +143,9 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
     ordersTrend,
   }
 }
+
+export const fetchDashboardStats = unstable_cache(
+  _fetchDashboardStats,
+  ['dashboard-stats'],
+  { tags: ['dashboard'], revalidate: 30 }
+)

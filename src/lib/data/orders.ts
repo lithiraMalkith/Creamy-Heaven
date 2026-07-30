@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import { adminDb } from '@/lib/firebase-admin'
 import type { Order, OrderStatus } from '@/types'
 
@@ -69,7 +70,7 @@ export async function fetchOrder(id: string): Promise<Order | null> {
     : null
 }
 
-export async function fetchPendingOrderCount(): Promise<number> {
+async function _fetchPendingOrderCount(): Promise<number> {
   const snapshot = await adminDb
     .collection('orders')
     .where('status', '==', 'pending')
@@ -77,3 +78,9 @@ export async function fetchPendingOrderCount(): Promise<number> {
     .get()
   return snapshot.data().count
 }
+
+export const fetchPendingOrderCount = unstable_cache(
+  _fetchPendingOrderCount,
+  ['pending-orders-count'],
+  { tags: ['orders'], revalidate: 10 }
+)
