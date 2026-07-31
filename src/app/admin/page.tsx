@@ -201,37 +201,119 @@ export default async function AdminDashboardPage({
 function RevenueLineChart({ data }: { data: { day: string; revenue: number }[] }) {
   if (data.length === 0) return <p className="text-brand-muted text-sm text-center py-8">No data</p>
 
-  const max = Math.max(...data.map((d) => d.revenue), 1)
+  const maxVal = Math.max(...data.map((d) => d.revenue), 10)
+  // Round up max for nice y-axis steps
+  const yMax = Math.ceil(maxVal / 1000) * 1000 || 1000
   const w = 600
-  const h = 240
-  const pad = 32
+  const h = 260
+  const padLeft = 65
+  const padRight = 24
+  const padTop = 24
+  const padBottom = 36
 
   const points = data.map((d, i) => {
-    const x = pad + (i / Math.max(data.length - 1, 1)) * (w - pad * 2)
-    const y = h - pad - (d.revenue / max) * (h - pad * 2)
-    return { x, y }
+    const x = padLeft + (i / Math.max(data.length - 1, 1)) * (w - padLeft - padRight)
+    const y = padTop + (1 - d.revenue / yMax) * (h - padTop - padBottom)
+    return { x, y, value: d.revenue }
   })
 
   const polyline = points.map((p) => `${p.x},${p.y}`).join(' ')
+  const areaPath = `M ${points[0].x},${h - padBottom} L ${polyline} L ${points[points.length - 1].x},${h - padBottom} Z`
+
+  // Y-axis grid ticks (4 steps)
+  const yTicks = [0, 0.33, 0.66, 1].map((step) => {
+    const val = Math.round(yMax * (1 - step))
+    const y = padTop + step * (h - padTop - padBottom)
+    return { val, y }
+  })
+
+  const formatLKR = (val: number) => {
+    if (val >= 1000000) return `Rs.${(val / 1000000).toFixed(1)}M`
+    if (val >= 1000) return `Rs.${(val / 1000).toFixed(0)}k`
+    return `Rs.${val}`
+  }
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-60" preserveAspectRatio="xMidYMid meet">
-      {/* Grid lines */}
-      {[0, 1, 2, 3].map((i) => {
-        const y = pad + (i * (h - pad * 2)) / 3
-        return (
-          <line key={i} x1={pad} x2={w - pad} y1={y} y2={y} stroke="#E7DDC9" strokeWidth="1" />
-        )
-      })}
-      {/* Line */}
-      <polyline points={polyline} fill="none" stroke="#151210" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-      {/* Dots */}
-      {points.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r="4" fill="#151210" />
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-64 overflow-visible" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#151210" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#151210" stopOpacity="0.0" />
+        </linearGradient>
+      </defs>
+
+      {/* Y-axis grid lines and labels */}
+      {yTicks.map((tick, i) => (
+        <g key={i}>
+          <line
+            x1={padLeft}
+            x2={w - padRight}
+            y1={tick.y}
+            y2={tick.y}
+            stroke="#E5E1D9"
+            strokeWidth="1"
+            strokeDasharray={i === yTicks.length - 1 ? 'none' : '4 4'}
+          />
+          <text
+            x={padLeft - 10}
+            y={tick.y + 4}
+            fontSize="11"
+            fontWeight="500"
+            fill="#8C857D"
+            textAnchor="end"
+            fontFamily="var(--font-body)"
+          >
+            {formatLKR(tick.val)}
+          </text>
+        </g>
       ))}
-      {/* Labels */}
+
+      {/* Area Gradient Fill */}
+      <path d={areaPath} fill="url(#revenueGradient)" />
+
+      {/* Main Line */}
+      <polyline
+        points={polyline}
+        fill="none"
+        stroke="#151210"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+
+      {/* Data Dots & Value Labels */}
+      {points.map((p, i) => (
+        <g key={i} className="group cursor-pointer">
+          <circle cx={p.x} cy={p.y} r="5" fill="#151210" className="transition-all hover:r-7" />
+          <circle cx={p.x} cy={p.y} r="2.5" fill="#FFFFFF" />
+          
+          {/* Top Value Pill (Value detail) */}
+          <text
+            x={p.x}
+            y={p.y - 12}
+            fontSize="10"
+            fontWeight="700"
+            fill="#151210"
+            textAnchor="middle"
+            fontFamily="var(--font-body)"
+          >
+            {p.value > 0 ? formatLKR(p.value) : ''}
+          </text>
+        </g>
+      ))}
+
+      {/* X-axis Day Labels */}
       {data.map((d, i) => (
-        <text key={i} x={points[i].x} y={h - 8} fontSize="11" fill="#8B8178" textAnchor="middle" fontFamily="var(--font-body)">
+        <text
+          key={i}
+          x={points[i].x}
+          y={h - 10}
+          fontSize="11"
+          fontWeight="600"
+          fill="#8C857D"
+          textAnchor="middle"
+          fontFamily="var(--font-body)"
+        >
           {d.day}
         </text>
       ))}
@@ -242,25 +324,89 @@ function RevenueLineChart({ data }: { data: { day: string; revenue: number }[] }
 function OrdersBarChart({ data }: { data: { day: string; orders: number; completed: number }[] }) {
   if (data.length === 0) return <p className="text-brand-muted text-sm text-center py-8">No data</p>
 
-  const max = Math.max(...data.map((d) => d.orders), 1)
+  const maxVal = Math.max(...data.map((d) => d.orders), 5)
+  const yMax = Math.ceil(maxVal / 5) * 5 || 5
+
+  const yTicks = [0, 0.5, 1].map((step) => {
+    const val = Math.round(yMax * (1 - step))
+    return { val, percent: step * 100 }
+  })
 
   return (
-    <div className="flex items-end gap-3 h-48">
-      {data.map((d, i) => (
-        <div key={i} className="flex-1 flex flex-col items-center gap-1">
-          <div className="w-full flex flex-col justify-end h-40 gap-0.5">
-            <div
-              className="w-full rounded-t-md bg-brand-black transition-all duration-300"
-              style={{ height: `${(d.orders / max) * 100}%`, minHeight: d.orders > 0 ? '4px' : '0' }}
-            />
-            <div
-              className="w-full rounded-t-md bg-brand-muted/40 transition-all duration-300"
-              style={{ height: `${(d.completed / max) * 60}%`, minHeight: d.completed > 0 ? '4px' : '0' }}
-            />
-          </div>
-          <span className="text-[10px] text-brand-muted font-body">{d.day}</span>
+    <div className="space-y-4">
+      {/* Legend */}
+      <div className="flex items-center justify-end gap-4 text-xs font-medium text-brand-muted">
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded bg-brand-black inline-block" />
+          <span>Total Orders</span>
         </div>
-      ))}
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded bg-brand-muted/40 inline-block" />
+          <span>Completed</span>
+        </div>
+      </div>
+
+      <div className="flex gap-3 items-stretch h-56 pt-2">
+        {/* Y-axis Labels */}
+        <div className="flex flex-col justify-between py-2 text-right pr-2 text-xs font-medium text-brand-muted font-body shrink-0 w-10 border-r border-brand-border">
+          {yTicks.map((t, idx) => (
+            <span key={idx}>{t.val}</span>
+          ))}
+        </div>
+
+        {/* Bars Grid */}
+        <div className="flex-1 flex items-end gap-3 justify-between pb-6 relative">
+          {/* Horizontal Gridlines */}
+          <div className="absolute inset-x-0 top-2 bottom-6 flex flex-col justify-between pointer-events-none">
+            <div className="border-b border-dashed border-brand-border w-full" />
+            <div className="border-b border-dashed border-brand-border w-full" />
+            <div className="border-b border-brand-border w-full" />
+          </div>
+
+          {data.map((d, i) => {
+            const orderPct = (d.orders / yMax) * 100
+            const completedPct = (d.completed / yMax) * 100
+
+            return (
+              <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end relative z-10 group">
+                {/* Bar Stack */}
+                <div className="w-full max-w-[36px] flex items-end justify-center gap-1 h-full">
+                  {/* Total Orders Bar */}
+                  <div className="w-1/2 flex flex-col justify-end h-full">
+                    {d.orders > 0 && (
+                      <span className="text-[10px] font-bold text-center text-brand-black mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {d.orders}
+                      </span>
+                    )}
+                    <div
+                      className="w-full rounded-t-md bg-brand-black hover:bg-brand-black/80 transition-all duration-300 shadow-sm"
+                      style={{ height: `${orderPct}%`, minHeight: d.orders > 0 ? '6px' : '2px' }}
+                    />
+                  </div>
+
+                  {/* Completed Orders Bar */}
+                  <div className="w-1/2 flex flex-col justify-end h-full">
+                    {d.completed > 0 && (
+                      <span className="text-[10px] font-bold text-center text-brand-muted mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {d.completed}
+                      </span>
+                    )}
+                    <div
+                      className="w-full rounded-t-md bg-brand-muted/40 hover:bg-brand-muted/60 transition-all duration-300"
+                      style={{ height: `${completedPct}%`, minHeight: d.completed > 0 ? '6px' : '2px' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Day Label */}
+                <span className="text-xs font-semibold text-brand-muted font-body absolute -bottom-5">
+                  {d.day}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }

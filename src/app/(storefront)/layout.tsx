@@ -28,58 +28,58 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
           />
 
           {/* Header Navigation */}
-          <header className="bg-brand-white/85 backdrop-blur-lg border-b border-brand-border/60 shadow-sm h-[76px] transition-all">
-            <div className="flex justify-between items-center px-margin-site-mobile md:px-margin-site h-full max-w-max-width-content mx-auto gap-4">
-              {/* Brand Logo & Main Nav */}
-              <div className="flex items-center gap-6 lg:gap-10">
-                <Link
-                  href="/"
-                  className="font-heading text-2xl font-bold tracking-tight text-brand-black hover:text-amber-900 transition-colors flex items-center gap-2 group shrink-0"
-                >
-                  {/* <span className="w-8 h-8 rounded-full bg-brand-black text-brand-cream flex items-center justify-center font-serif text-sm font-extrabold group-hover:scale-105 transition-transform">
-                    C
-                  </span> */}
-                  <span>Creamy Heaven</span>
-                </Link>
+          <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#eeedec] px-4 md:px-10 h-16 bg-white/80 backdrop-blur-md sticky top-0 z-[60] max-w-max-width-content mx-auto rounded-b-xl shadow-sm">
+            <div className="flex items-center gap-6 lg:gap-8">
+              {/* Brand Logo */}
+              <Link
+                href="/"
+                className="flex items-center gap-3 text-[#151413] hover:text-amber-900 transition-colors group shrink-0"
+              >
+                <div className="w-5 h-5 text-[#151413] flex items-center justify-center shrink-0">
+                  <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                    <path clipRule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V44Z" fill="currentColor" fillRule="evenodd"></path>
+                  </svg>
+                </div>
+                <h2 className="text-[#151413] text-xl font-bold leading-tight tracking-[-0.015em] font-heading">Creamy Heaven</h2>
+              </Link>
 
-                {/* Desktop Nav */}
-                <HeaderNav />
-              </div>
+              {/* Desktop Nav */}
+              <HeaderNav />
+            </div>
 
-              {/* Right Actions: Search + Cart + Account + Mobile Nav */}
-              <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-                <StorefrontSearch />
+            {/* Right Actions: Search + Cart + Account + Mobile Nav */}
+            <div className="flex items-center justify-end gap-3 sm:gap-4 shrink-0">
+              <StorefrontSearch />
 
-                {/* Cart Action Button */}
-                <Link
-                  href="/cart"
-                  className="relative p-2.5 rounded-full hover:bg-black/5 text-brand-black transition-all duration-200 hover:scale-105 active:scale-95 group"
-                  aria-label="Shopping Cart"
-                >
-                  <span className="material-symbols-outlined text-[22px] group-hover:text-amber-900 transition-colors">
-                    shopping_bag
+              {/* Cart Action Button */}
+              <Link
+                href="/cart"
+                className="relative flex items-center justify-center overflow-hidden rounded-lg h-10 w-10 sm:w-auto bg-[#eeedec] hover:bg-[#e4e2e0] text-[#151413] gap-2 text-sm font-bold leading-normal tracking-[0.015em] px-2.5 transition-colors"
+                aria-label="Shopping Cart"
+              >
+                <div className="text-[#151413] flex items-center justify-center" data-icon="ShoppingCart" data-size="20px" data-weight="regular">
+                  <svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87ZM96,204a12,12,0,1,1-12-12A12,12,0,0,1,96,204Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,192,204Zm4-74.57A8,8,0,0,1,188.1,136H69.22L57.59,72H206.41Z"></path>
+                  </svg>
+                </div>
+                {cartItemCount > 0 && (
+                  <span className="bg-brand-black text-brand-white text-xs px-1.5 py-0.5 rounded-full font-bold">
+                    {cartItemCount}
                   </span>
-                  {cartItemCount > 0 && (
-                    <span className="absolute top-0.5 right-0.5 bg-brand-black text-brand-white text-[10px] w-4.5 h-4.5 flex items-center justify-center rounded-full font-bold shadow-md animate-pulse">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </Link>
+                )}
+              </Link>
 
-                {/* Account Button */}
-                <Link
-                  href="/account"
-                  className="hidden sm:flex p-2.5 rounded-full hover:bg-black/5 text-brand-black transition-all duration-200 hover:scale-105 group"
-                  aria-label="My Account"
-                >
-                  <span className="material-symbols-outlined text-[22px] group-hover:text-amber-900 transition-colors">
-                    person
-                  </span>
-                </Link>
+              {/* Account Button */}
+              <Link
+                href="/account"
+                className="hidden sm:flex items-center justify-center rounded-full size-10 bg-[#eeedec] hover:bg-[#e4e2e0] text-[#151413] transition-colors"
+                aria-label="My Account"
+              >
+                <span className="material-symbols-outlined text-[20px]">person</span>
+              </Link>
 
-                {/* Mobile Drawer Trigger */}
-                <MobileNav cartItemCount={cartItemCount} categories={categories} />
-              </div>
+              {/* Mobile Drawer Trigger */}
+              <MobileNav cartItemCount={cartItemCount} categories={categories} />
             </div>
           </header>
         </div>
@@ -96,9 +96,9 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
               {/* Column 1 */}
               <div className="col-span-1">
                 <div className="font-heading text-2xl font-bold mb-4 text-brand-white tracking-tight flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-full bg-brand-cream text-brand-black flex items-center justify-center font-serif text-xs font-bold">
+                  {/* <span className="w-7 h-7 rounded-full bg-brand-cream text-brand-black flex items-center justify-center font-serif text-xs font-bold">
                     C
-                  </span>
+                  </span> */}
                   Creamy Heaven
                 </div>
                 <p className="font-body-md text-body-md text-brand-cream/80 leading-relaxed pr-4">
@@ -146,24 +146,46 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
                   FOLLOW US
                 </h3>
                 <div className="flex gap-3">
-                  {settings.socialLinks?.instagram && (
-                    <a href={settings.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-brand-white/20 flex items-center justify-center text-brand-cream hover:bg-brand-white hover:text-brand-black transition-all">
-                      <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                    </a>
-                  )}
-                  {settings.socialLinks?.facebook && (
-                    <a href={settings.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-brand-white/20 flex items-center justify-center text-brand-cream hover:bg-brand-white hover:text-brand-black transition-all">
-                      <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                    </a>
-                  )}
-                  {settings.socialLinks?.tiktok && (
-                    <a href={settings.socialLinks.tiktok} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-brand-white/20 flex items-center justify-center text-brand-cream hover:bg-brand-white hover:text-brand-black transition-all font-bold text-xs">
-                      TT
-                    </a>
-                  )}
-                  {!settings.socialLinks?.instagram && !settings.socialLinks?.facebook && !settings.socialLinks?.tiktok && (
-                    <span className="text-xs text-brand-cream/60">@creamyheaven</span>
-                  )}
+                  {/* TikTok */}
+                  <a
+                    href={settings.socialLinks?.tiktok || 'https://www.tiktok.com'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full border border-brand-white/20 flex items-center justify-center text-brand-cream hover:bg-brand-white hover:text-brand-black transition-all"
+                    aria-label="TikTok"
+                  >
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 1 1-5.2-1.74 2.89 2.89 0 0 1 2.31-1.47V8.98a6.33 6.33 0 0 0-5.83 6.3 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V9.64a8.28 8.28 0 0 0 4.84 1.54V7.74a4.85 4.85 0 0 1-1.58-1.05z" />
+                    </svg>
+                  </a>
+
+                  {/* Facebook */}
+                  <a
+                    href={settings.socialLinks?.facebook || 'https://www.facebook.com'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full border border-brand-white/20 flex items-center justify-center text-brand-cream hover:bg-brand-white hover:text-brand-black transition-all"
+                    aria-label="Facebook"
+                  >
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                    </svg>
+                  </a>
+
+                  {/* Instagram */}
+                  <a
+                    href={settings.socialLinks?.instagram || 'https://www.instagram.com'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full border border-brand-white/20 flex items-center justify-center text-brand-cream hover:bg-brand-white hover:text-brand-black transition-all"
+                    aria-label="Instagram"
+                  >
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                  </a>
                 </div>
               </div>
             </div>

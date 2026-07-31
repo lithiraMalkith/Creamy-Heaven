@@ -102,13 +102,30 @@ export default async function ProductDetailPage({
 
         {/* Product Details (Right) */}
         <ScrollReveal direction="left" className="flex flex-col">
-          <div className="mb-2">
+          <div className="mb-2 flex items-center gap-2 flex-wrap">
             <span className="inline-flex items-center px-3 py-1 rounded-full text-label-sm font-label-sm bg-surface-container-lowest border border-brand-border text-brand-black">
               {product.category}
             </span>
             {product.isFeatured && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-label-sm font-label-sm bg-brand-cream text-brand-black ml-2">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-label-sm font-label-sm bg-brand-cream text-brand-black">
                 Featured
+              </span>
+            )}
+            {/* Stock Status Badge */}
+            {product.availabilityStatus === 'out_of_stock' || product.stockQty <= 0 ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-black text-brand-cream border border-brand-white/10">
+                <span className="w-2 h-2 rounded-full bg-brand-muted opacity-80" />
+                Sold Out
+              </span>
+            ) : product.availabilityStatus === 'low_stock' || product.stockQty <= 5 ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-black text-brand-cream border border-brand-white/10">
+                <span className="w-2 h-2 rounded-full bg-brand-cream animate-pulse" />
+                Low Stock ({product.stockQty} remaining)
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-black text-brand-cream border border-brand-white/10">
+                <span className="w-2 h-2 rounded-full bg-brand-cream" />
+                In Stock
               </span>
             )}
           </div>
@@ -151,6 +168,7 @@ export default async function ProductDetailPage({
                   slug: product.slug,
                   image: images[0]
                 }} 
+                disabled={product.availabilityStatus === 'out_of_stock' || product.stockQty <= 0}
               />
             </div>
             <p className="font-label-sm text-label-sm text-brand-muted mt-4 text-center">Available for store pickup or local delivery.</p>

@@ -13,6 +13,7 @@ interface AddToCartButtonProps {
   }
   compact?: boolean
   quantity?: number
+  disabled?: boolean
 }
 
 // Hoist formatter outside the component to avoid re-creating on every render
@@ -21,7 +22,7 @@ const formatter = new Intl.NumberFormat('en-LK', {
   currency: 'LKR',
 })
 
-export function AddToCartButton({ product, compact = false, quantity = 1 }: AddToCartButtonProps) {
+export function AddToCartButton({ product, compact = false, quantity = 1, disabled = false }: AddToCartButtonProps) {
   const [isPending, startTransition] = useTransition()
   const [added, setAdded] = useState(false)
 
@@ -49,6 +50,32 @@ export function AddToCartButton({ product, compact = false, quantity = 1 }: AddT
         setAdded(false)
       }
     })
+  }
+
+  if (disabled) {
+    if (compact) {
+      return (
+        <button 
+          disabled
+          className="w-10 h-10 rounded-full bg-brand-cream text-brand-black/40 border border-brand-border flex items-center justify-center cursor-not-allowed"
+          aria-label="Out of stock"
+          title="Out of stock"
+        >
+          <span className="material-symbols-outlined text-[18px]">remove_shopping_cart</span>
+        </button>
+      )
+    }
+
+    return (
+      <button 
+        disabled
+        className="flex-1 w-full bg-brand-cream/60 text-brand-black/50 border border-brand-border px-8 py-4 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 cursor-not-allowed font-bold"
+        type="button"
+      >
+        <span className="material-symbols-outlined text-[20px]">block</span>
+        Out of Stock
+      </button>
+    )
   }
 
   if (compact) {

@@ -40,8 +40,8 @@ export default async function ShopPage({
   const pageTitle = subCategoryFilter
     ? `${subCategoryFilter}`
     : categoryFilter
-    ? `${categoryFilter}`
-    : 'Shop All'
+      ? `${categoryFilter}`
+      : 'Shop All'
 
   return (
     <div className="max-w-max-width-content mx-auto px-margin-site-mobile md:px-margin-site py-section-v-space min-h-[calc(100vh-200px)] w-full">
@@ -83,8 +83,8 @@ export default async function ShopPage({
           {subCategoryFilter
             ? `Handcrafted ${subCategoryFilter.toLowerCase()} baked fresh daily.`
             : categoryFilter
-            ? `Browse our ${categoryFilter.toLowerCase()} collection.`
-            : 'Browse our complete artisanal collection.'}
+              ? `Browse our ${categoryFilter.toLowerCase()} collection.`
+              : 'Browse our complete artisanal collection.'}
         </p>
       </ScrollReveal>
 
@@ -108,17 +108,17 @@ export default async function ShopPage({
               </span>
               {categoryFilter && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-900/10 text-amber-950 font-bold text-xs rounded-full">
-                  Category: {categoryFilter}
+                  {categoryFilter}
                 </span>
               )}
               {subCategoryFilter && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-900 text-brand-white font-bold text-xs rounded-full">
-                  Subcategory: {subCategoryFilter}
+                  {subCategoryFilter}
                 </span>
               )}
               {searchFilter && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-brand-black text-brand-white font-bold text-xs rounded-full">
-                  Query: "{searchFilter}"
+                  {searchFilter}
                 </span>
               )}
               <Link

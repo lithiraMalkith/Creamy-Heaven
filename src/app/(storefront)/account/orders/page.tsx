@@ -12,6 +12,7 @@ export const metadata = {
 export default async function AccountOrdersPage() {
   const session = await requireCustomerAuth()
 
+  // Fetch user orders directly
   const ordersSnapshot = await adminDb
     .collection('orders')
     .where('customer.email', '==', session.email)
@@ -19,10 +20,6 @@ export default async function AccountOrdersPage() {
     .get()
 
   const orders = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as any[]
-
-  // Fetch products to fill in missing images for old orders
-  const allProducts = await fetchProducts()
-  const productsMap = new Map(allProducts.map(p => [p.id, p.images?.[0]]))
 
   return (
     <ScrollReveal direction="up" className="space-y-8">
@@ -34,7 +31,7 @@ export default async function AccountOrdersPage() {
       {orders.length > 0 ? (
         <div className="bg-surface-container-lowest border border-brand-border rounded-xl overflow-hidden divide-y divide-brand-border">
           {orders.map(order => {
-            const firstItemImage = order.items?.[0]?.image || (order.items?.[0]?.productId ? productsMap.get(order.items[0].productId) : null)
+            const firstItemImage = order.items?.[0]?.image
             return (
             <div key={order.id} className="p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4 flex-grow">

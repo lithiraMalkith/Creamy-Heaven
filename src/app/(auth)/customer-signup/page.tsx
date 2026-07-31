@@ -30,6 +30,31 @@ export default function CustomerSignupPage() {
     }
   }
 
+  const getFriendlyErrorMessage = (code?: string, rawMsg?: string) => {
+    switch (code) {
+      case 'auth/email-already-in-use':
+        return 'An account with this email address already exists. Please log in instead.'
+      case 'auth/invalid-email':
+        return 'Please enter a valid email address.'
+      case 'auth/weak-password':
+        return 'Password is too weak. Please use at least 6 characters.'
+      case 'auth/operation-not-allowed':
+        return 'Email/password accounts are not enabled. Please contact support.'
+      case 'auth/network-request-failed':
+        return 'Network connection failed. Please check your internet connection and try again.'
+      case 'auth/popup-closed-by-user':
+        return 'Google sign-up window was closed before completing.'
+      default:
+        if (rawMsg?.includes('email-already-in-use')) {
+          return 'An account with this email address already exists. Please log in instead.'
+        }
+        if (rawMsg?.includes('weak-password')) {
+          return 'Password is too weak. Please use at least 6 characters.'
+        }
+        return 'Could not complete registration. Please check your details and try again.'
+    }
+  }
+
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -49,11 +74,12 @@ export default function CustomerSignupPage() {
         email,
       })
 
-      const idToken = await userCredential.user.getIdToken()
+      // Force refresh token to include updated displayName claim
+      const idToken = await userCredential.user.getIdToken(true)
       await handleSession(idToken)
     } catch (err: any) {
-      console.error(err)
-      setError(err.message || 'Failed to create account.')
+      console.error('Signup error:', err)
+      setError(getFriendlyErrorMessage(err.code, err.message))
       setLoading(false)
     }
   }
@@ -75,8 +101,8 @@ export default function CustomerSignupPage() {
       const idToken = await userCredential.user.getIdToken()
       await handleSession(idToken)
     } catch (err: any) {
-      console.error(err)
-      setError('Google sign-up failed.')
+      console.error('Google signup error:', err)
+      setError(getFriendlyErrorMessage(err.code, err.message))
       setLoading(false)
     }
   }

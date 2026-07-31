@@ -27,10 +27,23 @@ export async function getCustomerSession(): Promise<CustomerSession | null> {
     // Additional check: Ensure it's a customer. Admin users might have role claim
     // but we can allow them to shop too. Just ensuring token is valid.
     
+    let userName = decodedClaims.name
+
+    // If decoded claims don't include a name (e.g. standard email/password login),
+    // fetch from Firestore 'customers' collection
+    if (!userName) {
+      try {
+        const doc = await adminAuth.getUser(decodedClaims.uid)
+        userName = doc.displayName || undefined
+      } catch (err) {
+        // ignore fallback fetch errors
+      }
+    }
+
     return {
       uid: decodedClaims.uid,
       email: decodedClaims.email,
-      name: decodedClaims.name,
+      name: userName,
       role: (decodedClaims as any).role,
     }
   } catch (error) {

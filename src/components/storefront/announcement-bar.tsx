@@ -47,14 +47,14 @@ export function AnnouncementBar({ announcements, enabled = true }: AnnouncementB
       onMouseLeave={() => setIsPaused(false)}
     >
       <div className="max-w-max-width-content mx-auto flex items-center justify-between gap-3">
-        {/* Left Arrow Controls (Desktop/Tablet) */}
+        {/* Left Arrow Controls (Desktop/Tablet)
         <button
           onClick={handlePrev}
           className="hidden sm:flex items-center justify-center text-brand-cream/60 hover:text-brand-cream transition-colors p-1 rounded hover:bg-white/10"
           aria-label="Previous announcement"
         >
           <ChevronLeft className="w-4 h-4" />
-        </button>
+        </button> */}
 
         {/* Center Announcement Content */}
         <div className="flex-1 flex items-center justify-center text-center gap-2 overflow-hidden py-0.5">
@@ -76,31 +76,30 @@ export function AnnouncementBar({ announcements, enabled = true }: AnnouncementB
           </div>
         </div>
 
-        {/* Right Arrow Controls (Desktop/Tablet) */}
+
         <div className="flex items-center gap-1">
-          <button
+          {/* <button
             onClick={handleNext}
             className="hidden sm:flex items-center justify-center text-brand-cream/60 hover:text-brand-cream transition-colors p-1 rounded hover:bg-white/10"
             aria-label="Next announcement"
           >
             <ChevronRight className="w-4 h-4" />
-          </button>
+          </button> */}
 
           {/* Dots Indicator */}
-          {activeItems.length > 1 && (
+          {/* {activeItems.length > 1 && (
             <div className="flex items-center gap-1 ml-2">
               {activeItems.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrentIndex(i)}
-                  className={`w-1.5 h-1.5 rounded-full transition-all ${
-                    i === currentIndex ? 'bg-amber-300 w-3' : 'bg-brand-cream/40 hover:bg-brand-cream/70'
-                  }`}
+                  className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentIndex ? 'bg-amber-300 w-3' : 'bg-brand-cream/40 hover:bg-brand-cream/70'
+                    }`}
                   aria-label={`Go to slide ${i + 1}`}
                 />
               ))}
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

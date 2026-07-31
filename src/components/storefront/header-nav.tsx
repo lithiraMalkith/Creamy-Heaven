@@ -7,7 +7,6 @@ export function HeaderNav() {
   const pathname = usePathname()
 
   const links = [
-    { href: '/', label: 'Home' },
     { href: '/shop', label: 'Shop' },
     { href: '/about', label: 'Our Story' },
     { href: '/contact', label: 'Contact' },
@@ -15,17 +14,15 @@ export function HeaderNav() {
   ]
 
   return (
-    <nav className="hidden md:flex items-center gap-1 bg-brand-cream/40 p-1.5 rounded-full border border-brand-border/40 shadow-inner">
+    <nav className="hidden md:flex items-center gap-9">
       {links.map((link) => {
-        const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
+        const isActive = pathname === link.href || (link.href.startsWith('/shop') && pathname === '/shop')
         return (
           <Link
             key={link.href}
             href={link.href}
-            className={`relative px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 ${
-              isActive
-                ? 'bg-brand-black text-brand-white shadow-sm font-bold scale-[1.02]'
-                : 'text-brand-black/70 hover:text-brand-black hover:bg-black/5'
+            className={`text-[#151413] text-sm font-medium leading-normal hover:text-amber-900 transition-colors ${
+              isActive ? 'font-bold text-amber-950 underline underline-offset-4 decoration-amber-900/40' : ''
             }`}
           >
             {link.label}

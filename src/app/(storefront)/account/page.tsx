@@ -11,6 +11,16 @@ export const metadata = {
 export default async function AccountDashboardPage() {
   const session = await requireCustomerAuth()
 
+  // Fetch customer record from Firestore to get name if session.name is missing
+  let displayName = session.name
+  const customerDoc = await adminDb.collection('customers').doc(session.uid).get()
+  if (customerDoc.exists) {
+    const customerData = customerDoc.data()
+    if (customerData?.name) {
+      displayName = customerData.name
+    }
+  }
+
   // Fetch recent orders
   const ordersSnapshot = await adminDb
     .collection('orders')
@@ -24,7 +34,7 @@ export default async function AccountDashboardPage() {
   return (
     <ScrollReveal direction="up" className="space-y-12">
       <div>
-        <h1 className="font-headline-lg text-headline-lg text-brand-black mb-2">Welcome back, {session.name || 'Guest'}</h1>
+        <h1 className="font-headline-lg text-headline-lg text-brand-black mb-2">Welcome back, {displayName || session.email?.split('@')[0] || 'Guest'}</h1>
         <p className="font-body-lead text-body-lead text-brand-muted">Manage your orders and account preferences.</p>
       </div>
 
