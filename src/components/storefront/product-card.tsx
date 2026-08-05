@@ -17,7 +17,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className="group bg-surface-container-lowest border border-brand-border rounded-xl overflow-hidden hover:shadow-[0_10px_30px_rgba(21,18,16,0.05)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative">
-      <Link href={`/shop/${product.slug}`} className="relative h-64 overflow-hidden bg-surface-container block shrink-0">
+      <Link href={`/shop/${product.slug}`} className="relative h-48 sm:h-64 overflow-hidden bg-surface-container block shrink-0">
         <img 
           src={imageSrc} 
           alt={product.name}
@@ -51,26 +51,28 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
       </Link>
 
-      <div className="p-6 flex flex-col flex-grow">
+      <div className="p-4 sm:p-6 flex flex-col flex-grow">
         <Link href={`/shop/${product.slug}`}>
           <h3 className="font-headline-sm text-headline-sm text-brand-black mb-1 line-clamp-1 group-hover:text-amber-950 transition-colors">{product.name}</h3>
-          <p className="font-body-md text-body-md text-brand-muted mb-4 line-clamp-2 min-h-[3rem]">{product.description}</p>
+          <p className="font-body-md text-body-md text-brand-muted mb-4 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]">{product.description}</p>
         </Link>
-        <div className="flex justify-between items-center mt-auto">
-          <span className="font-price-display text-price-display text-brand-black">
+        <div className="flex justify-between items-center mt-auto flex-nowrap gap-3">
+          <span className="font-price-display text-[18px] sm:text-price-display text-brand-black truncate">
             {formatter.format(product.price)}
           </span>
-          <AddToCartButton 
-            product={{
-              id: product.id,
-              name: product.name,
-              price: product.price,
-              slug: product.slug,
-              image: imageSrc
-            }} 
-            compact 
-            disabled={isOutOfStock}
-          />
+          <div className="shrink-0">
+            <AddToCartButton 
+              product={{
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                slug: product.slug,
+                image: imageSrc
+              }} 
+              compact 
+              disabled={isOutOfStock}
+            />
+          </div>
         </div>
       </div>
     </div>

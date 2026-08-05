@@ -14,13 +14,22 @@ interface MobileNavProps {
 
 export function MobileNav({ cartItemCount, categories = [] }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
   const toggleMenu = () => setIsOpen(!isOpen)
   const closeMenu = () => setIsOpen(false)
 
-  const toggleAccordion = (catId: string) => {
+  const toggleCategoriesAccordion = () => {
+    if (isCategoriesOpen) {
+      // Collapse categories → also reset any open subcategory
+      setExpandedCategory(null)
+    }
+    setIsCategoriesOpen(!isCategoriesOpen)
+  }
+
+  const toggleSubcategoryAccordion = (catId: string) => {
     setExpandedCategory(expandedCategory === catId ? null : catId)
   }
 
@@ -83,55 +92,96 @@ export function MobileNav({ cartItemCount, categories = [] }: MobileNavProps) {
             Shop All
           </Link>
 
-          {/* Dynamic Categories & Accordion Subcategories */}
-          {categories.map((cat) => {
-            const hasSubs = cat.subCategories && cat.subCategories.length > 0
-            const isExpanded = expandedCategory === cat.id
+          {/* Categories Accordion — wraps all category items */}
+          {categories.length > 0 && (
+            <div className="flex flex-col">
+              {/* Categories Toggle Row */}
+              <button
+                type="button"
+                onClick={toggleCategoriesAccordion}
+                className="flex items-center justify-between py-1 w-full text-left group"
+                aria-expanded={isCategoriesOpen}
+                aria-label="Toggle categories"
+              >
+                <span className="flex items-center gap-2.5 font-label-md text-label-md text-brand-black text-lg">
+                  {/* <span className="material-symbols-outlined text-[20px] text-amber-900/70">grid_view</span> */}
+                  Categories
+                  <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-amber-900/10 text-amber-950 text-[11px] font-bold leading-none">
+                    {categories.length}
+                  </span>
+                </span>
+                <ChevronDown
+                  className={`w-5 h-5 transition-transform duration-300 ${isCategoriesOpen ? 'rotate-180 text-amber-800' : 'text-brand-muted'
+                    }`}
+                />
+              </button>
 
-            return (
-              <div key={cat.id} className="flex flex-col">
-                <div className="flex items-center justify-between py-1">
-                  <Link
-                    href={`/shop?category=${encodeURIComponent(cat.name)}`}
-                    onClick={closeMenu}
-                    className="font-label-md text-label-md text-brand-black text-lg flex-grow"
-                  >
-                    {cat.name}
-                  </Link>
-                  {hasSubs && (
-                    <button
-                      type="button"
-                      onClick={() => toggleAccordion(cat.id)}
-                      className="p-1 text-brand-black hover:bg-black/5 rounded-md"
-                      aria-label={`Toggle ${cat.name} subcategories`}
-                    >
-                      <ChevronDown
-                        className={`w-5 h-5 transition-transform duration-200 ${
-                          isExpanded ? 'rotate-180 text-amber-800' : ''
-                        }`}
-                      />
-                    </button>
-                  )}
-                </div>
+              {/* Collapsible Categories Container — CSS grid-rows transition */}
+              <div
+                className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                style={{ gridTemplateRows: isCategoriesOpen ? '1fr' : '0fr' }}
+              >
+                <div className="overflow-hidden">
+                  <div className="flex flex-col gap-1 pl-4 pt-2 pb-1 mt-1 border-l-2 border-amber-800/30">
+                    {categories.map((cat) => {
+                      const hasSubs = cat.subCategories && cat.subCategories.length > 0
+                      const isSubExpanded = expandedCategory === cat.id
 
-                {/* Subcategories Accordion */}
-                {hasSubs && isExpanded && (
-                  <div className="flex flex-col pl-4 py-1.5 gap-2 border-l-2 border-brand-border my-1 animate-in fade-in slide-in-from-top-1 duration-150">
-                    {cat.subCategories.map((sub) => (
-                      <Link
-                        key={sub.id}
-                        href={`/shop?category=${encodeURIComponent(cat.name)}&subCategory=${encodeURIComponent(sub.name)}`}
-                        onClick={closeMenu}
-                        className="text-sm text-brand-muted hover:text-brand-black transition-colors py-0.5"
-                      >
-                        {sub.name}
-                      </Link>
-                    ))}
+                      return (
+                        <div key={cat.id} className="flex flex-col">
+                          <div className="flex items-center justify-between py-1.5">
+                            <Link
+                              href={`/shop?category=${encodeURIComponent(cat.name)}`}
+                              onClick={closeMenu}
+                              className="text-[15px] font-medium text-brand-black hover:text-amber-900 transition-colors flex-grow"
+                            >
+                              {cat.name}
+                            </Link>
+                            {hasSubs && (
+                              <button
+                                type="button"
+                                onClick={() => toggleSubcategoryAccordion(cat.id)}
+                                className="p-1 text-brand-muted hover:text-brand-black hover:bg-black/5 rounded-md transition-colors"
+                                aria-label={`Toggle ${cat.name} subcategories`}
+                              >
+                                <ChevronDown
+                                  className={`w-4 h-4 transition-transform duration-200 ${isSubExpanded ? 'rotate-180 text-amber-800' : ''
+                                    }`}
+                                />
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Subcategories Nested Accordion */}
+                          {hasSubs && (
+                            <div
+                              className="grid transition-[grid-template-rows] duration-200 ease-in-out"
+                              style={{ gridTemplateRows: isSubExpanded ? '1fr' : '0fr' }}
+                            >
+                              <div className="overflow-hidden">
+                                <div className="flex flex-col pl-4 py-1 gap-1.5 border-l-2 border-brand-border my-0.5">
+                                  {cat.subCategories.map((sub) => (
+                                    <Link
+                                      key={sub.id}
+                                      href={`/shop?category=${encodeURIComponent(cat.name)}&subCategory=${encodeURIComponent(sub.name)}`}
+                                      onClick={closeMenu}
+                                      className="text-sm text-brand-muted hover:text-brand-black transition-colors py-0.5"
+                                    >
+                                      {sub.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
-                )}
+                </div>
               </div>
-            )
-          })}
+            </div>
+          )}
 
           <Link href="/about" onClick={closeMenu} className="font-label-md text-label-md text-brand-black text-lg">
             About Us

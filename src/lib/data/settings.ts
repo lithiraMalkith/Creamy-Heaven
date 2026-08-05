@@ -3,10 +3,10 @@ import { adminDb } from '@/lib/firebase-admin'
 import type { SiteSettings } from '@/types'
 
 const DEFAULT_ANNOUNCEMENTS = [
-  { id: '1', text: '🚚 Free Delivery for orders within Colombo area.', enabled: true },
-  { id: '2', text: '🎉 Special Discounts on selected artisanal treats.', enabled: true },
-  { id: '3', text: '🔥 Limited-Time Offers & seasonal celebration specials.', enabled: true },
-  { id: '4', text: '💳 Secure Cash on Delivery (COD) & Express Delivery.', enabled: true },
+  { id: '1', text: 'Free Delivery for orders within Colombo area.', enabled: true },
+  { id: '2', text: 'Special Discounts on selected artisanal treats.', enabled: true },
+  { id: '3', text: 'Limited-Time Offers & seasonal celebration specials.', enabled: true },
+  { id: '4', text: 'Secure Cash on Delivery (COD) & Express Delivery.', enabled: true },
 ]
 
 async function _fetchSettings(): Promise<SiteSettings> {
